@@ -19,6 +19,8 @@ Open the "files_to_run" folder and locate the following:
 ## quick setup 
 demova.sql - this is the postgres database backup, go to postgres and restore the file for quick setup.
 
+After restoring the database, you can go straight to the Dashboard (Type http://dns:port/CRVS or http://localhost/CRVS (If your apache runs in port 80))
+
 ## for manual setup
 • vadata.csv – This is the original va data (demo data for this purpose)
 
