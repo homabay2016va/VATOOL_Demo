@@ -21,9 +21,13 @@ demova.sql - this is the postgres database backup, go to postgres and restore th
 
 ## for manual setup
 • vadata.csv – This is the original va data (demo data for this purpose)
+
 • icd10.csv – A list of ICD10 causes and codes. (for information- not used by the python code but by the pipeline_cod.R code)
+
 • pipeline_cod.R - Customized code for running COD using both Insilico and InterVA and produces the "merged_cod_va.csv" file. Begin by opening this and make necessary adjustment to run with your data. End product should be the following file.
+
 • merged_cod_va.csv – This is the va data that is merged with respective COD and ICD10 codes. This is important file for the dashboard python code. 
+
 • python_code.py – This is python code that will pick the "merged_cod_va.csv" and run analytics/data checks on it. In future, this code should be incooporated into the OpenVA pipeline for easy use and installation. Then execute this file after executing the R file. This also pushes data to postgres database for use by the dashboard.
 
 
