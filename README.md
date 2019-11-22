@@ -1,6 +1,6 @@
 # VATOOL_Demo
 
-VA Dashboard application VATOOL is a web based application aimed at providing visualisations of VA data and COD information obtained after successfully running/executing OpenVA pipeline. The tool also provides information that is informative on VA data quality and also CSMF based on aspects like age group and sex in a specific year.
+VA Dashboard application (VATOOL) is a web based application aimed at providing visualisations of VA data and COD reports and summaries, obtained after successfully running/executing OpenVA pipeline. VA and COD data summary will help in monitoring and evaluating VA data collection and also provides information that is informative on VA data quality and also CSMF based on aspects like age group and sex in a specific year. VA Data and COD information are extracted from OpenVA pipeline end results are saved in PostgreSQL database, where the dashboard will pick them for further data management tasks and analysis and finally displayed in the web portal. 
 
 # Installation and use
 Make sure you have installed openva_pipeline. [https://openva-pipeline.readthedocs.io/en/latest/install.html]
