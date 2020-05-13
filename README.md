@@ -12,6 +12,7 @@ Download and Install Xampp [https://vitux.com/how-to-install-xampp-on-your-ubunt
 
 for Linux
 Navigate to computer/opt/lamp/htdocs/ and paste the "VATOOL_Demo" folder there.
+
 N/B: Open home folder in the VATOOL_Demo directory, edit the sqlite_functions.php file to include your respective database credentials.
 
 
@@ -19,6 +20,7 @@ Open the "files_to_run" folder and locate the following:
 •	python script – This is an automated program that executes all the necessary Bat files from beginning to end to update the database. 
 •	R files:- Combines various VA data to one final file. (Incase you want to merge all previous collected data from other forms).
 •	Bat files:- to execute R files on demand from the python program.
+
 demova.sql backup file- this is the postgres database backup, go to postgres and restore the file for quick setup.
 
 
