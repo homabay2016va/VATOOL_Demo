@@ -1,18 +1,20 @@
 <?php
+
 if(isset($_POST['login'])){
 	include("login_fn.php");
+
 	$lg = new loginFN();
 						$uname = $_POST['uname'];
 						$pwd = $_POST['pwd'];
-
 						$ud = $lg->login($uname,$pwd);
+
 						if(empty($ud)){
 							echo "<div class='alert alert-warning alert-dismissible fade show'
 							style='margin-top:5px;'>
 							Wrong username/password</div>";
 						}else{
 							//var_dump($ud);
-								//echo "found";
+								
 								session_start();
 								$_SESSION['uname'] = $ud[0];
 								$_SESSION['sid'] =  md5($ud[2]);
@@ -31,13 +33,7 @@ include("header.php");
 		margin-left: 20vw; 
 		width: 40vw;
 	}
-	#myVideo {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 50%; 
-  min-height: 100%;
-}
+
 </style>
 <body >
 	
@@ -62,9 +58,7 @@ include("header.php");
 							<div class="col-sm-3">
 								<input type="submit" value="login" name="login" class="form-control btn btn-success"/>
 							</div>
-							<div class="col-sm-4">
-								<a href="create_account.php" class="form-control btn btn-success">create account</a>	
-							</div>
+						
 						</div>			
 					</form>
 					

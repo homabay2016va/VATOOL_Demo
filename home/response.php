@@ -293,51 +293,6 @@
 
 
 
-/*	if(isset($_POST['intyear'])){
-
-		$yr = $_POST['intyear'];
-
-		$intsum = $df->InterviwerSummary($yr);
-		$intsum2 = $df->InterviwerSummary($yr);
-		$rows = $intsum2 ->fetchAll();
-		
-		//var_dump($intsum2 ->fetch(PDO::FETCH_ASSOC));
-
-		echo '<table class="table table-bg table-bordered table-responsive" id="intsumTbl" cellspacing="0" style="width:;">';
-
-		$cntCol = $intsum ->columnCount();
-		$cntData = $intsum ->rowCount();
-
-		$columns = array_keys($intsum ->fetch(PDO::FETCH_ASSOC));
-
-		echo "<thead><tr>";
-		for($i=0;$i<$cntCol;$i++){
-			echo "<th>".$columns[$i]."</th>";
-		}
-		echo "</tr></thead>";
-																
-		echo "<tbody>";
-		foreach($rows as $row) {
-			echo "<tr>";
-			for($k=0;$k<$cntCol;$k++){
-				echo "<td>".$row[$k]."</td>";
-			}
-		 echo "</tr>";
-		}
-		echo "</tbody>";
-
-
-		echo "<tfoot><tr>";
-		for($i=0;$i<$cntCol;$i++){
-			echo "<th>".$columns[$i]."</th>";
-		}
-		echo "</tr></tfoot>";
-							
-		echo "</table>";
-		
-
-	} */
-
 	if(isset($_POST['cuyear'])){
 
 		$yr = $_POST['cuyear'];

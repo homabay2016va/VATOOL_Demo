@@ -21,6 +21,6 @@ if(!isset($_SESSION['sid'])){
 	}
 
 	$_SESSION['last_activity'] = time(); //your last activity was now, having logged in.
-	$_SESSION['expire_time'] = 10*60;  //expire time in seconds: three hours (you must change this)
+	$_SESSION['expire_time'] = 30*60; //1800secs //expire time in seconds: three hours (you must change this)
 }
 ?>

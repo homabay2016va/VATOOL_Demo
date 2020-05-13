@@ -1,4 +1,6 @@
 <?php
+//session_start();
+//print_r($_SESSION);
 include("session.php");
 ?>
 <!DOCTYPE html>
@@ -12,180 +14,138 @@ include("session.php");
   <title>VATool</title>
   <!-- Bootstrap core CSS-->
 
- <!-- Custom fonts for this template-->
+ <!-- Custom fonts for this template
+<script type="text/javascript" src="bootstrap/js/jquery.dataTables.min.js"></script>   
+<link href="bootstrap/datatables/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="bootstrap/js/dataTables.bootstrap.min.js"></script>
+ -->
+ <script type="text/javascript" src="bootstrap/jquery/jquery.js"></script>
 
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>   
-  <script type="text/javascript" src="js/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="js/plotly-latest.min.js"></script>
-
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-<link href="vendor/jquery/jquery-ui.css" rel="stylesheet" type="text/css">
-<link href="vendor/dataTables/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
-
-<script type="text/javascript" src="vendor/jquery/jquery-ui.js"></script> 
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="bootstrap/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="bootstrap/datatables/dataTables.bootstrap.min.js"></script>
 
 
-  <script type="text/javascript">
+<script type="text/javascript" src="bootstrap/jquery/jquery-ui.js"></script> 
+<script type="text/javascript" src="bootstrap/js/plotly-latest.min.js"></script>
 
-    function exportTableToCSV(filename) {
-    var csv = [];
-    var rows = document.querySelectorAll("table tr");
-    
-    for (var i = 0; i < rows.length; i++) {
-        var row = [], cols = rows[i].querySelectorAll("td, th");
-        
-        for (var j = 0; j < cols.length; j++) 
-            row.push(cols[j].innerText);
-        
-        csv.push(row.join(","));        
-    }
+<link href="bootstrap/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="bootstrap/fontawesome/css/all.css" rel="stylesheet" type="text/css">
+<link href="bootstrap/jquery/jquery-ui.css" rel="stylesheet" type="text/css">
 
-    // Download CSV file
-    downloadCSV(csv.join("\n"), filename);
+
+<style type="text/css">
+body{
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-function downloadCSV(csv, filename) {
-    var csvFile;
-    var downloadLink;
 
-    // CSV file
-    csvFile = new Blob([csv], {type: "text/csv"});
-
-    // Download link
-    downloadLink = document.createElement("a");
-
-    // File name
-    downloadLink.download = filename;
-
-    // Create a link to the file
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-
-    // Hide download link
-    downloadLink.style.display = "none";
-
-    // Add the link to DOM
-    document.body.appendChild(downloadLink);
-
-    // Click download link
-    downloadLink.click();
+/* Sidebar links */
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin-top: 20px;
+  padding-left: 20px;
 }
-           
 
-  </script>
-  
- <style type="text/css">
- .maincontainer{
-  
- }
- * {box-sizing: border-box;}
-  #leftnav{
-    width: 9vw;
-    min-width: 150px;
-    max-width: 150px;
-    background-color:white;
-    margin-left: 0px;
-    border-right: inset 1px;
-    padding-top:40px ; 
-    float: left;
-    height: 200vh;
-    align-items: stretch;
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100vw;
+    height: auto;
+    position: relative;
   }
-  .navbar{
-    
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
   }
+}
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: white;
+  overflow: hidden;
+  margin-left: -15px;
+  color: black;
+   margin-right:-15px;
+   border: 1px ridge;
+}
+.content{
  
-  #leftnavlist{
-    padding-left: 1%;
-  }
-  #leftnavlist ul{
-    padding-left: 0px;
-  }
-  #leftnavlist ul li{
-    list-style-type: none;
-
-  }
-  #leftnavlist ul li a{
-    text-decoration: none;    
-    color: grey;
-    font-size: 13px;
-  }
-  .navheader{
-    padding-left: 2%;
-    padding-top: 1%;
-    border-bottom: inset 1px;
-    height:10vh;
-  }
-  
-  .content{
-    padding-left: 10px; 
-    float: left;
-  }
-  #sub1,#sub2,#sub3{
-    width: 250px;
-    height: 120px;
-    padding-left: 20px;
-    padding-top: 10px;
-    border-radius: 20px;
-    float: left;
-    margin-top: 30px;
-    margin-left: 30px; 
-    background-color: white; 
-  }
-  #sub1{
-    margin-left: 20px;
-  }
-  .midcontent{
-    margin-left: 30px;
-    margin-top: 20px;
-    float: left;
-    background-color:;
-    height: 200vh;
-    width:75vw;
-    
-    }
-  #spanleft{  }
-  #spanright{
-   float: right;
-  margin-right: 30px;
-   }
-#subcontent{
-
 }
-   #sub4,#sub5{
-    float: left;
-    width: 26vw;
-    height: 66vh;
-    margin-top: 30px;
-    margin-left: 30px; 
-    background-color: white; 
-    padding-left: 20px;
-    padding-top: 20px;
-    border-radius: 20px;
-   }
+
+/* Create two unequal columns that floats next to each other */
+.column {
+  float: left;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+ /* The side navigation menu */
+.left {
+  width: 13vw;
+   margin: 0;
+  padding: 0;
+  margin-left: -15px;
+  background-color: #333;
+  height: 100vh;
+}
+
+.right {
+  width: 80vw;
+  margin-left: 2vw;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.card{
+  width: 13vw;
+  height: 13vh;
+  margin-left:2vw;
   
-   #sub6{
-    float: left;
-    width: 40vw;
-    height: 66vh;
-    margin-top: 30px;
-    margin-left: 30px; 
-    background-color: white; 
-    padding-left: 20px;
-    padding-top: 20px;
-    border-radius: 20px;
-   }
-   #imgicon{
-    width: 60px;
-    height: 50px;
-   }
-    #iconleft{
-    width: 30px;
-    height: 30px;
-   }
- </style>
+}
+
+
+.card1{
+  animation-name: ex21;
+  animation-duration: 7s;
+  animation-delay:1s;
+  animation-iteration-count: infinite;
+}
+@keyframes card1 {
+  0%   {background-color:red; left:0px; top:0px;}
+  25%  {background-color:yellow; left:200px; top:0px;}
+  50%  {background-color:blue; left:200px; top:200px;}
+  75%  {background-color:green; left:0px; top:200px;}
+  100% {background-color:red; left:0px; top:0px;}
+}
+
+@keyframes ex1 {
+  0%   {transform:scaleX(0);}
+  25%  {transform:scaleX(1);}
+  50%  {transform:scaleX(2);}
+  75%  {transform:scaleX(3);}
+  100% {transform:scaleX(4);}
+}
+
+@keyframes ex2 {
+  0%   {transform:rotateY(180deg);}
+  100% {transform:rotateY(360deg);}
+}
+
+</style>
 </head>
-
-
-    
-

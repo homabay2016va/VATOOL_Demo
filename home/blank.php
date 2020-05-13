@@ -1,24 +1,43 @@
-<?php
-include("header.php");
-?>
+
+ <?php include("header.php"); ?>
 <body >
-	<?php 
-	include("connection.php");
-?>
-<div class="container-fluid">			
-			<?php include("navheader.php"); ?>
-		<!-- left nav menu-->
-		<div class="content" >
-			<?php //include("navleft.php"); ?>
+<div class="container-fluid">
 
-			<div class="midcontent">
-				<script type="text/javascript">
-					var d = new Date('2017-10-10T00:00:00.000+03');
-					console.log(d.getUTCHours()); // Hours
-				</script>
-			</div>
-		</div>
-</div>
+<?php include("topnav.php"); ?>
 
+
+<!-- Page content -->
+<div class="content">
+
+  <div class="row" style=""><!-- mid content -->
+    <?php include("leftnav.php"); ?>
+
+
+    <div class="right column" style="">
+      <!-- dash items -->
+      <div class="row"> 
+        <div class="" id="card"><h3>We are here</h3></div>
+      </div>
+
+
+
+    </div>
+ 
+
+
+  </div><!-- mid content -->
+
+
+
+
+  
+
+ </div> <!-- Page content -->
+    
+
+</div><!-- container -->
 </body>
-</html>
+
+
+    
+

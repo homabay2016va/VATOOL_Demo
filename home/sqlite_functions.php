@@ -5,56 +5,150 @@ Class SQLITEDB{
 
 	public function __construct(){
 		
-		
 		//print($constr);
 		try{
 
 			#$this->con=new PDO("sqlite:va.db");
 			//$this->con=new PDO("sqlite:va_new.db");
-		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=vatool','postgres','qollins8592');
+		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=zmdata','vaprogram','P@55w0rd');
 			//$this->con = new PDO('sqlite:C:/Users/user/OneDrive/CRVS_DASH_CODE/va.db');
-			//echo "ss";
+			//echo "ss";		
+
 		}catch(PDOException $e){
 			print($e->getMessage());
 		}
 	}
 
-	function InterViewers(){
-		$vadata="SELECT ID as instanceid, id10010 as interviwerName,id10017 as Firstname ,id10019 as Gender,id10057 as death_occur,id10058 as death_location, 
+	function InterViewers($vaid){
+		$vaid=pg_escape_string($vaid);
+		$vadata="SELECT distinct instanceid, case when id10010='other' then id10010_other else id10010 end as interviwerName,id10017 as Firstname ,id10019 as Gender,id10057 as death_occur,id10058 as death_location, 
  case when isadult='1' or age_group='adult' then 'Adult' 
  when ischild='1' or age_group='child' then 'Child' 
  when isneonatal='1' or age_group='neonate' then 'Neonate' end as Age_group,
   case when isadult='1' then ageinyears when ischild='1' then ageinyears when isneonatal='1' then ageindays else ageinyears2 end as Age 
- from vadata";
+ from vadata_clean where instanceid='".$vaid."'";
 		
 		$dt =$this->con->query($vadata);
 		//$array['cntloc']=$loc->rowCount();
-		
 
 		return $dt;
 	}
 
 
-	public function InterviwerSummary($yr){
+	function InterViewersCOD($cod){
+		$cod=pg_escape_string($cod);
+		$vadata="SELECT distinct instanceid,t1.cause1 as COD, case when id10010='other' then id10010_other else id10010 end as interviwerName,id10017 as Firstname ,id10019 as Gender,id10057 as death_occur,id10058 as death_location, 
+ case when isadult='1' or age_group='adult' then 'Adult' 
+ when ischild='1' or age_group='child' then 'Child' 
+ when isneonatal='1' or age_group='neonate' then 'Neonate' end as Age_group,
+  case when isadult='1' then ageinyears when ischild='1' then ageinyears when isneonatal='1' then ageindays else ageinyears2 end as Age 
+     FROM vacod t1 JOIN vadata_clean t2 ON t1.id = t2.instanceid 
+     where t1.cause1='".$cod."'";
+		
+		$dt =$this->con->query($vadata);
+		//$array['cntloc']=$loc->rowCount();
 
-		$q ="select
-		  upper(id10010) AS interviewer_name,
-		  SUM( CASE WHEN month = 1 THEN 1 ELSE 0 END ) as jan,
-		  SUM( CASE WHEN month = 2 THEN 1 ELSE 0 END ) as feb,
-		  SUM( CASE WHEN month = 3 THEN 1 ELSE 0 END ) as mar,
-		  SUM( CASE WHEN month = 4 THEN 1 ELSE 0 END ) as apr,
-		  SUM( CASE WHEN month = 5 THEN 1 ELSE 0 END ) as may,
-		  SUM( CASE WHEN month = 6 THEN 1 ELSE 0 END ) as jun,
-		  SUM( CASE WHEN month = 7 THEN 1 ELSE 0 END ) as jul,
-		  SUM( CASE WHEN month = 8 THEN 1 ELSE 0 END ) as aug,
-		  SUM( CASE WHEN month = 9 THEN 1 ELSE 0 END ) as sep,
-		  SUM( CASE WHEN month = 10 THEN 1 ELSE 0 END ) as oct,
-		  SUM( CASE WHEN month = 11 THEN 1 ELSE 0 END ) as nov,
-		  SUM( CASE WHEN month = 12 THEN 1 ELSE 0 END ) as dec,
+		return $dt;
+	}
+
+ Function saveToCsv($filename,$query){
+ 		 	$filename=pg_escape_string($filename);
+ 		 		$query=pg_escape_string($query);
+	  //  $csv_filename=$filename;
+	//$dir2="Downloads";
+	//$dir="/storage/odk/forms/".$csv_filename;
+	//if(file_exists("/storage/odk/forms/")){
+	   //$file=fopen("C:/VADATA/Test.csv","w");
+	    //echo getcwd();
+	   //header("Content-Type: text/csv");
+	  header("Content-Disposition: attachment; filename=".$filename."");
+	 
+	    $file=fopen("php://output","w");
+
+		$res = $this->con->query($query);
+		$res2 = $this->con->query($query);
+		$cntCol = $res ->columnCount();
+		$columns = array_keys($res->fetch(PDO::FETCH_ASSOC));
+		$rows = $res2->fetchAll();
+
+		for($i=0;$i<$cntCol;$i++){
+			$colname[]=$columns[$i];
+		}
+		fputcsv($file,$colname);
+
+	   // while ($c=mysqli_fetch_field($q)){
+	    //    $colname[]=$c->name; 
+	    //}
+	   // fputcsv($file,$colname);
+
+		foreach($rows as $row) {
+			$dt=array("");
+				for($i=0;$i<$cntCol;$i++){
+					$dt[$i]=$row[$i];
+				}			
+			fputcsv($file,$dt);		 
+		}
+	    
+	    fclose($file);
+    }
+
+function CheckUser($user){
+      $user=pg_escape_string($user);
+		$arr= array();
+		$uq = "select username,usergroup,uid from public.users where username='".$user."'";
+		$res = $this->con->query($uq);
+		
+		if(is_array($res) || is_object($res)){
+			foreach($res as $row){
+				
+				array_push($arr,$row['username']);
+				array_push($arr,$row['usergroup']);
+				array_push($arr,$row['uid']);
+			}
+		}	
+
+		return $arr;
+	}
+
+	function login($user,$pwd){
+          $user=pg_escape_string($user);
+            $pwd=pg_escape_string($pwd);
+		$arr= array();
+		$uq = "select username,usergroup,uid,password from public.users where username='".$user."'";
+		
+		$res = $this->con->query($uq);
+		
+		if(is_array($res) || is_object($res)){
+			foreach($res as $row){
+				if(password_verify($pwd, $row['password'])){
+					array_push($arr,$row['username']);
+					array_push($arr,$row['usergroup']);
+					array_push($arr,$row['uid']);
+				}		
+			}
+		}	
+
+		return $arr;
+	}
+	public function InterviwerSummary($yr){
+      $yr=pg_escape_string($yr);
+		$q ="select distinct upper(case when id10010='other' then id10010_other else id10010 end) AS interviewer_name,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 1 THEN 1 ELSE 0 END ) as jan,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 2 THEN 1 ELSE 0 END ) as feb,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 3 THEN 1 ELSE 0 END ) as mar,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 4 THEN 1 ELSE 0 END ) as apr,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 5 THEN 1 ELSE 0 END ) as may,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 6 THEN 1 ELSE 0 END ) as jun,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 7 THEN 1 ELSE 0 END ) as jul,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 8 THEN 1 ELSE 0 END ) as aug,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 9 THEN 1 ELSE 0 END ) as sep,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 10 THEN 1 ELSE 0 END ) as oct,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 11 THEN 1 ELSE 0 END ) as nov,
+		  SUM( CASE WHEN date_part('month'::text, submissiondate::date) = 12 THEN 1 ELSE 0 END ) as dec,
 		  count(*) as tot,
-		  year as interview_year
-		  from vadata  where year='".$yr."'
-		  group by upper(id10010), year";
+		   date_part('year'::text, submissiondate::date) as interview_year
+		  from vadata_clean  where  date_part('year'::text, submissiondate::date)='".$yr."'
+		  group by upper(case when id10010='other' then id10010_other else id10010 end),  date_part('year'::text, submissiondate::date)";
 
 		  $dt =$this->con->query($q);
 		//$array['cntloc']=$loc->rowCount();
@@ -62,36 +156,116 @@ Class SQLITEDB{
 
 	}
 
-	public function CunitSummary($yr){
+	public function InterviwerSummaryDate($from,$to){
+		  $from=pg_escape_string($from);
+		   $to=pg_escape_string($to);
+		$q ="select distinct upper((case when id10010='other' then id10010_other else id10010 end)) AS interviewer_name,count(case when id10010='other' then id10010_other else id10010 end) submitted
+		from vadata_clean  where cast(submissiondate as date)>= '".$from."' and cast(submissiondate as date)<='".$to."'
+		group by case when id10010='other' then id10010_other else id10010 end";
 
-		$q2 ="select
-		  upper(cunit) AS cunit,
-		  SUM( CASE WHEN month = 1 THEN 1 ELSE 0 END ) as jan,
-		  SUM( CASE WHEN month = 2 THEN 1 ELSE 0 END ) as feb,
-		  SUM( CASE WHEN month = 3 THEN 1 ELSE 0 END ) as mar,
-		  SUM( CASE WHEN month = 4 THEN 1 ELSE 0 END ) as apr,
-		  SUM( CASE WHEN month = 5 THEN 1 ELSE 0 END ) as may,
-		  SUM( CASE WHEN month = 6 THEN 1 ELSE 0 END ) as jun,
-		  SUM( CASE WHEN month = 7 THEN 1 ELSE 0 END ) as jul,
-		  SUM( CASE WHEN month = 8 THEN 1 ELSE 0 END ) as aug,
-		  SUM( CASE WHEN month = 9 THEN 1 ELSE 0 END ) as sep,
-		  SUM( CASE WHEN month = 10 THEN 1 ELSE 0 END ) as oct,
-		  SUM( CASE WHEN month = 11 THEN 1 ELSE 0 END ) as nov,
-		  SUM( CASE WHEN month = 12 THEN 1 ELSE 0 END ) as dec,
-		  count(*) as tot,
-		  year as interview_year
-		  from locator_data  where year='".$yr."'
-		  group by upper(cunit), year";
-		  //echo $q2;
-		  $dt =$this->con->query($q2);
+		  $dt =$this->con->query($q);
 		//$array['cntloc']=$loc->rowCount();
 		return $dt;
 
 	}
 
+
+public function countGender(){
+		$tot=0; 
+		$arr= array();
+		$arr2 = array();
+		$sexq="select distinct id10019 as gender,count(id10019)counts  from vadata_clean group by id10019";
+		$sex = $this->con->query($sexq);
+
+		foreach($sex as $row){
+			array_push($arr,$row['gender']);
+			array_push($arr2,$row['counts']);
+		}
+
+		$tot1 = array_sum($arr2);
+
+		$array['gender']= $arr;
+		$array['counts']= $arr2;
+		return $array;
+	}
+	
+public function countPod(){
+		$tot=0; 
+		$arr= array();
+		$arr2 = array();
+		$sexq="select distinct id10058 as pod,count(id10058)counts  from vadata_clean group by id10058";
+		$sex = $this->con->query($sexq);
+
+		foreach($sex as $row){
+			array_push($arr,$row['pod']);
+			array_push($arr2,$row['counts']);
+		}
+
+		$tot1 = array_sum($arr2);
+
+		$array['pod']= $arr;
+		$array['counts']= $arr2;
+		return $array;
+	}
+
+	public function countPodYear($yr){
+		  $yr=pg_escape_string($yr);
+		$tot=0; 
+		$arr= array();
+		$arr2 = array();
+		$sexq="select distinct id10058 as pod,count(id10058)counts  from vadata_clean where date_part('year'::text, id10023::date)='".$yr."' group by id10058";
+		$sex = $this->con->query($sexq);
+
+		foreach($sex as $row){
+			array_push($arr,$row['pod']);
+			array_push($arr2,$row['counts']);
+		}
+
+		$tot1 = array_sum($arr2);
+
+		$array['pod']= $arr;
+		$array['counts']= $arr2;
+		return $array;
+	}
+
+	public function errorCounts($yr){
+		  $yr=pg_escape_string($yr);
+		$tot=0; 
+		$arr= array();
+		$arr2 = array();
+		$sexq="select distinct id10058 as pod,count(id10058)counts  from vadata_clean where date_part('year'::text, id10023::date)='".$yr."' group by id10058";
+		$sex = $this->con->query($sexq);
+
+		foreach($sex as $row){
+			array_push($arr,$row['pod']);
+			array_push($arr2,$row['counts']);
+		}
+
+		$tot1 = array_sum($arr2);
+
+		$array['pod']= $arr;
+		$array['counts']= $arr2;
+		return $array;
+	}
+
+
+public function DynamicGaphOne($query){
+		  $query=pg_escape_string($query);
+		$tot=0; 
+		$arr= array();
+		$qs = $this->con->query($query);
+
+		//foreach($qs as $row){
+		//	array_push($arr,$row);
+		//}
+
+		return $qs;
+	}
+	
+
 	public function countToday(){
 		$arr = array();
-		$yr = "select count(*)today from vadata where cast(submissiondate as date)=current_date";
+		$yr = "select distinct count( *) as today from vadata_clean where cast(submissiondate as date)=current_date";
 		$resyr = $this->con->query($yr);
 		foreach($resyr as $row){
 			$array['today'] = $row['today'];		
@@ -101,8 +275,8 @@ Class SQLITEDB{
 
 	public function countThisWeek(){
 		$arr = array();
-		$yr = "select count(*)thisweek from vadata where date_part('week'::text, submissiondate::date)=date_part('week'::text, current_date::date) and 
-year=date_part('year'::text, current_date::date)";
+		$yr = "select distinct count(*)thisweek from vadata_clean where date_part('week'::text, submissiondate::date)=date_part('week'::text, current_date::date) and 
+ date_part('year'::text, submissiondate::date)=date_part('year'::text, current_date::date)";
 		$resyr = $this->con->query($yr);
 		foreach($resyr as $row){
 			$array['thisweek'] = $row['thisweek'];
@@ -112,8 +286,8 @@ year=date_part('year'::text, current_date::date)";
 
 	public function countThisMonth(){
 		$arr = array();
-		$yr = "select count(*)thismonth from vadata where month=date_part('month'::text, current_date::date) and 
-year=date_part('year'::text, current_date::date)";
+		$yr = "select distinct count( *)thismonth from vadata_clean where date_part('month'::text, submissiondate::date)=date_part('month'::text, current_date::date) and 
+ date_part('year'::text, submissiondate::date)=date_part('year'::text, current_date::date)";
 		$resyr = $this->con->query($yr);
 		foreach($resyr as $row){
 			$array['thismonth'] = $row['thismonth'];
@@ -124,7 +298,7 @@ year=date_part('year'::text, current_date::date)";
 
 public function countThisYear(){
 		$arr = array();
-		$yr = "select count(*)thisyear from vadata where year=date_part('year'::text, current_date::date) ";
+		$yr = "select distinct count( *)thisyear from vadata_clean where  date_part('year'::text, submissiondate::date)=date_part('year'::text, current_date::date) ";
 		$resyr = $this->con->query($yr);
 		foreach($resyr as $row){
 			$array['thisyear'] = $row['thisyear'];
@@ -136,7 +310,46 @@ public function countThisYear(){
 public function AllColumns(){
 		
 		$cols=array();
-		$data = "select * from vadata";
+		$data = "SELECT distinct t1.id,t2.index,
+    t1.cause1 ,
+    t1.comcat,
+    t1.insilico,
+    t2.submissiondate,
+    case when t2.id10010 ='other' then t2.id10010_other else id10010 end,
+    t2.id10012,
+	 t2.province,
+    t2.province_other,
+    t2.area,
+    t2.other_area,
+    t2.hospital,
+    t2.other_hospital,
+ t2.id10010_other,
+    t2.id10011,
+    t2.id10023,
+	t2.id10017,
+	t2.id10019,
+	t2.id10057,
+	t2.id10058,
+    t2.ageindays,
+	t2.ageinyears2,
+    t2.ageinyears, 
+    t2.ageinmonths,   
+   t2.age_group,   
+    t2.isneonatal,
+    t2.ischild,
+    t2.isadult,
+    date_part('year'::text, t2.id10023::date) AS dodyear,
+    date_part('month'::text, t2.id10023::date) AS dodmonth,
+    date_part('year'::text, t2.submissiondate::date) AS year,
+    date_part('month'::text, t2.submissiondate::date) AS month,
+        CASE
+            WHEN t2.ischild = '1'::text THEN 'Child'::text
+            WHEN t2.isadult = '1'::text THEN 'Adult'::text
+            WHEN t2.isneonatal = '1'::text THEN 'Neonate'::text
+            ELSE NULL::text
+        END AS agegroup
+   FROM vacod t1
+     JOIN vadata_clean t2 ON t1.id = t2.instanceid order by t2.index";
 		//pg_fetch_all_columns($data);
 		$res = $this->con->query($data);
 		
@@ -177,7 +390,7 @@ public function AllColumns(){
 	}
 
 public function MontlyReportSex($yr){
-
+		  $yr=pg_escape_string($yr);
 		$mtot=0;
 		$ftot=0;
 
@@ -224,6 +437,7 @@ public function MontlyReportSex($yr){
 	}
 
 public function MontlyReportByagegroup($yr){
+	  $yr=pg_escape_string($yr);
 		$arr= array();
 		$arra = array_fill(0,12,0);
 		$arrc = array_fill(0,12,0);
@@ -288,6 +502,7 @@ public function MontlyReportByagegroup($yr){
 	}
 
 	public function MontlyReportYear($yr){
+		  $yr=pg_escape_string($yr);
 		$month = 1; $mtotal=0;
 		$mdata=array();
 		$arr = array_fill(0,12,0);
@@ -317,23 +532,10 @@ public function MontlyReportByagegroup($yr){
 		
 	}
 
-	public function locatorByPod(){
-		$arr= array();
-		$arr2= array();
-		$data = "select place_of_death,counts from ByPod";
-		$res = $this->con->query($data);
-
-		foreach($res as $row){
-			array_push($arr,$row['place_of_death']);
-			array_push($arr2,$row['counts']);
-		}
-		$array['pod'] = $arr;
-		$array['cnt'] = $arr2;
-
-		return $array;
-	}
+	
 
 	public function csmfInterVA($year){
+		  $year=pg_escape_string($year);
 		$arr= array();
 		$arr2= array();
 		//$ar3= array();
@@ -371,6 +573,8 @@ public function MontlyReportByagegroup($yr){
 	}
 
 	public function Undetermined($year){
+		  $year=pg_escape_string($year);
+
 		$arr= array();
 		$arr2= array();
 
@@ -400,6 +604,7 @@ public function MontlyReportByagegroup($yr){
 
 	
 	public function csmfInsilico($year){
+		  $year=pg_escape_string($year);
 		$arr= array();
 		$arr2= array();
 		$tot=0;
@@ -433,22 +638,7 @@ public function MontlyReportByagegroup($yr){
 		return $array;
 	}
 
-	public function locatorByPodCunit($cu){
-		$arr= array();
-		$arr2= array();
-		$data = "select place_of_death,count(place_of_death)counts from locator_data where cunit='".$cu."' group by place_of_death";
-		$res = $this->con->query($data);
-
-		foreach($res as $row){
-			array_push($arr,$row['place_of_death']);
-			array_push($arr2,$row['counts']);
-		}
-		$array['pod'] = $arr;
-		$array['cnt'] = $arr2;
-
-		return $array;
-	}
-
+	
 	public function countForms(){
 		$adult=0;$child=0;$neonate=0; $totalforms=0;
 		$vaforms="select count(case when isadult='1' or age_group='adult' then '1' end)adult,
@@ -456,7 +646,7 @@ public function MontlyReportByagegroup($yr){
 							count(case when isneonatal='1' or age_group='neonate' then '1' end)neonate ,
 							count(case when isneonatal='0' and ischild='0' and isadult='0' then '1' end)nodata,
 							count(*)vacnt
-							from vadata ";
+							from vadata_clean ";
 		$vaformsq = $this->con->query($vaforms);
 
 		foreach($vaformsq as $row){
@@ -471,6 +661,7 @@ public function MontlyReportByagegroup($yr){
 	}
 
 	public function countFormsYear($yr){
+		  $yr=pg_escape_string($yr);
 		$adult=0;$child=0;$neonate=0; $totalforms=0;
 		
 			$vaforms="select count(case when isadult='1' or age_group='adult' then '1' end)adult,
@@ -478,7 +669,7 @@ public function MontlyReportByagegroup($yr){
 							count(case when isneonatal='1' or age_group='neonate' then '1' end)neonate ,
 							count(case when isneonatal='0' and ischild='0' and isadult='0' then '1' end)nodata,
 							count(*)vacnt
-							from vadata where year='".$yr."'";
+							from vadata_clean where date_part('year'::text, submissiondate::date)='".$yr."'";
 		
 		//echo $vaforms;
 		$vaformsq = $this->con->query($vaforms);
@@ -494,52 +685,13 @@ public function MontlyReportByagegroup($yr){
 		return $array;
 	}
 
-	public function CunitSex(){
-		$arr= array();
-		$arr2 = array();
-		$arr3 = array();
-		$arr4 = array();
-		$mdata = "select cunit,sex,counts from cunitsex where sex='male' limit 10";
-		$res = $this->con->query($mdata);
-
-		foreach($res as $row){
-			array_push($arr,$row['cunit']);
-			array_push($arr2,$row['counts']);
-		}
-
-		$fdata = "select cunit,sex,counts from cunitsex where sex='female' limit 10;";
-		$res2 = $this->con->query($fdata);
-
-		foreach($res2 as $row){
-			array_push($arr3,$row['cunit']);
-			array_push($arr4,$row['counts']);
-		}
-
-		$array['mcunit'] = $arr;
-		$array['males'] = $arr2;
-		$array['fcunit'] = $arr3;
-		$array['females'] = $arr4;
-
-		return $array;
-	}
-	public function Cunits(){
-		$arrcu = array();
-
-		$cu = "select distinct cunit from CunitSex";
-		$rescu = $this->con->query($cu);
-
-		foreach($rescu as $row){
-			array_push($arrcu,$row['cunit']);
-		}
-		$array['cu'] = $arrcu;
-
-		return $array;
-	}
-
+	
+	
 	public function csmfYear(){
 		$arrcu = array();
 
-		$yr = "select DISTINCT dodyear as year from vadata order by dodyear desc";
+		$yr = "select DISTINCT  date_part('year'::text, id10023::date) as year from vadata_clean 
+ order by  date_part('year'::text, id10023::date) desc";
 		$resyr = $this->con->query($yr);
 
 		foreach($resyr as $row){
@@ -550,10 +702,25 @@ public function MontlyReportByagegroup($yr){
 		return $array;
 	}
 
+	public function COD(){
+		$arrcu = array();
+
+		$yr = "select distinct cause1 as interva5 from vacod";
+		$resyr = $this->con->query($yr);
+
+		foreach($resyr as $row){
+			array_push($arrcu,$row['interva5']);
+		}
+		$array['interva5'] = $arrcu;
+
+		return $array;
+	}
+
 	public function VASubmissionYear(){
 		$arrcu = array();
 
-		$yr = "select DISTINCT year from vadata order by year desc";
+		$yr = "select DISTINCT date_part('year'::text, submissiondate::date)as year from vadata_clean 
+		order by date_part('year'::text, submissiondate::date) desc";
 		$resyr = $this->con->query($yr);
 
 		foreach($resyr as $row){
@@ -568,7 +735,7 @@ public function MontlyReportByagegroup($yr){
 	public function SubmissionYear(){
 		$arrcu = array();
 
-		$cu = "select DISTINCT year from vadata order by year desc";
+		$cu = "select DISTINCT date_part('year'::text, submissiondate::date) as year from vadata_clean order by date_part('year'::text, submissiondate::date) desc";
 		$rescu = $this->con->query($cu);
 
 		foreach($rescu as $row){
@@ -579,82 +746,13 @@ public function MontlyReportByagegroup($yr){
 		return $array;
 	}
 
-	public function LocatorYear(){
-		$arrcu = array();
+	
 
-		$cu = "select DISTINCT year from locator_data order by year desc";
-		$rescu = $this->con->query($cu);
 
-		foreach($rescu as $row){
-			array_push($arrcu,$row['year']);
-		}
-		$array['year'] = $arrcu;
 
-		return $array;
-	}
-
-	public function CunitSexFilter($cunit){
-		$arr= array();
-		$arr2 = array();
-		$arr3 = array();
-		$arr4 = array();
-
-		$mdata = "select cunit,sex,counts from cunitsex where sex='male' and cunit='".$cunit."'";
-		
-		$res = $this->con->query($mdata);
-
-		foreach($res as $row2){
-			//var_dump($row2['counts']);
-			array_push($arr,$row2['cunit']);
-			array_push($arr2,$row2['counts']);
-		}
-
-		$fdata = "select cunit,sex,counts from cunitsex where sex='female' and cunit='".$cunit."'";
-		$res2 = $this->con->query($fdata);
-
-		foreach($res2 as $row){
-			array_push($arr3,$row['cunit']);
-			array_push($arr4,$row['counts']);
-		}
-
-		$array['mcunit'] = $arr;
-		$array['males'] = $arr2;
-		$array['fcunit'] = $arr3;
-		$array['females'] = $arr4;
-
-		return $array;
-	}
-
-	public function PodBySex(){
-		$arr= array();
-		$arr2 = array();
-		$arr3 = array();
-		$arr4 = array();
-		$mdata = "select place_of_death,sex,counts from PodBySex where sex='male' limit 10";
-		$res = $this->con->query($mdata);
-
-		foreach($res as $row){
-			array_push($arr,$row['place_of_death']);
-			array_push($arr2,$row['counts']);
-		}
-
-		$fdata = "select place_of_death,sex,counts from PodBySex where sex='female' limit 10;";
-		$res2 = $this->con->query($fdata);
-
-		foreach($res2 as $row){
-			array_push($arr3,$row['place_of_death']);
-			array_push($arr4,$row['counts']);
-		}
-
-		$array['mpod'] = $arr;
-		$array['males'] = $arr2;
-		$array['fpod'] = $arr3;
-		$array['females'] = $arr4;
-
-		return $array;
-	}
 
 	public function interva5CODBySex($year){
+		  $year=pg_escape_string($year);
 		$arr= array();
 		$arr2 = array();
 		$arr3 = array();
@@ -717,6 +815,7 @@ public function MontlyReportByagegroup($yr){
 	}
 
 	public function interva5CODByagegroup($year){
+		$year=pg_escape_string($year);
 		$arr= array();
 		$arr2 = array();
 		$arr3 = array();
@@ -808,58 +907,15 @@ public function MontlyReportByagegroup($yr){
 		return $array;
 	}
 
-function CountLocatorFormBySex(){
-		$q='SELECT sex as gender, count(sex) as cnt FROM locator_data group by sex';
-		
-		$loc=$this->con->query($q);
-
-		foreach($loc as $row){
-			$array['ambiguous']=0;
-			if($row['gender']='male'){
-				$array['male']=$row['cnt'];
-			}else if ($row['gender']='female'){
-				$array['female']=$row['cnt'];
-			}else{
-				$array['ambiguous']=$row['cnt'];
-			}
-		}
-		return $array;
-	}
-
-function CountLocatorForm(){
-		$notquery='select instanceid from locator_data';
-		$loc=$this->con->query($notquery);
-		$array['cntloc']=$loc->rowCount();
-
-		return $array;
-	}
 
 
-function CountLocatorFormByPod(){
-		$q='SELECT  place_of_death as pod, count(place_of_death)cnt
-		FROM locator_data group by place_of_death';
-		
-		$loc=$this->con->query($q);
-
-		foreach($loc as $row){
-			if($row['pod']='Home'){
-				$array['Home'] = $row['cnt'];
-			}
-			if($row['pod']='other'){
-				$array['other'] = $row['cnt'];
-			}
-			if($row['pod']='Health_facility'){
-				$array['Health_facility'] = $row['cnt'];
-			}
-		}
-
-		return $array;
-	}
 	public function AllTables(){
 		
 		$tbls=array();
 		$data = "select table_name from information_schema.tables where table_schema='public'
-		and table_name not in ('vadata','users') ";
+		and table_name not in ('vadata','users','vadata_clean','smartva_clean','smartva_field',
+		'smartva_temp','smartva_transition','vadata_temp','vadata_transition','vadata_all',
+			'vadata_field','tempcod') ";
 		//pg_fetch_all_columns($data);
 		$res = $this->con->query($data);
 		foreach($res as $row){
@@ -872,7 +928,104 @@ function CountLocatorFormByPod(){
 	  return $array;
 		
 	}
+
+	public function saveProvince($province){
+		$province=pg_escape_string($province);
+		$ret=0;
+		echo $province;
+		  $q = "insert into province(province) values('".$province."')";
+		  $res = $this->con->execute($q);
+		  if($res){
+		  	$ret=1;
+		  }else{
+		  	$ret = 0;
+		  }
+
+		  return $ret;
+	}
+
+    public function GeoList($type){
+    	$type=pg_escape_string($type);
+		$arr= array();
+		$arr2 = array();
+	
+		if($type==1){
+			##province
+			$data = "select distinct tid,province as geoname from province";
+		
+		}elseif ($type==2) {
+			# district
+			$data = "select distinct tid,district as geoname from districts";
+
+		}else{
+			#facilities
+			$data = "select distinct tid,facility geoname from facilities";
+		}
+		
+		//echo $data;
+		$res = $this->con->query($data);
+		foreach($res as $row){
+			$arr[$row['tid']]=$row['geoname'];
+			//array_push($arr,$row['geoname']);
+			//array_push($arr2,$row['tid']);
+		}
+
+		//$array['geoname'] = $arr;
+		//$array['tid'] = $arr2;
+        //var_dump($array);
+        
+	  return $arr;
+		
+	}
+
+
+
+	public function InterviwerList($type){
+		$type=pg_escape_string($type);
+		$arr= array();
+		$arr2 = array();
+	
+		if($type==1){
+			##populate dirty columns
+			$data = "select distinct id10010 as intname,count(*)counts from public.vadata_clean where id10010 not in 
+		(select id10010 from geo where id10010 is not null) and position('_' in id10010)<1
+		group by id10010 order by counts";
+		
+		}elseif ($type==2) {
+			# populate clean names
+			$data = "select distinct id10010 as intname,count(*)counts from public.vadata_clean where id10010 not in 
+		(select id10010 from geo where id10010 is not null) and position('_' in id10010)>0
+		group by id10010 order by counts";
+
+		}elseif($type==3){
+			##populate dirty columns
+			$data = "select distinct id10010 as intname,count(id10010)counts from public.geo
+			group by id10010 order by counts";
+		
+		}else{
+			#populate geo mapping names
+			$data = "select distinct interviewer as intname,count(*)counts from public.geo where id10010 is null 
+		group by interviewer order by counts";
+		}
+		
+		//echo $data;
+		$res = $this->con->query($data);
+		foreach($res as $row){
+			array_push($arr,$row['intname']);
+			array_push($arr2,$row['counts']);
+		}
+
+		$array['intname'] = $arr;
+		$array['counts'] = $arr2;
+        //var_dump($array);
+        
+	  return $array;
+		
+	}
+
+
 public function AnytableCols($query){
+	$query=pg_escape_string($query);
 		$arr= array();
 		$res = $this->con->query($query);
 		$data = $res->fetchAll(PDO::FETCH_ASSOC);
@@ -884,72 +1037,21 @@ public function AnytableCols($query){
 		return $data;
 	}
 
+
 public function AnytableData($query){
+	$query=pg_escape_string($query);
 		$arr= array();
 		$res = $this->con->query($query);
 		
 		return $res;
 	}
-function LocatorSummaryByYear($pod){
-		$arrc= array();
-		$arryr= array();
-		$q='select  count(place_of_death)cnt,place_of_death as pod, 
-		year as dodyear from locator_data
-		where place_of_death='.'\''.$pod.'\''.'
-	 	GROUP by year,place_of_death order by year desc';
-		 //echo $q;
-		$loc=$this->con->query($q);
-		if(is_array($loc) || is_object($loc)){
-			foreach($loc as $row){
-				 array_push($arrc, $row['cnt']) ;
-				 array_push($arryr, $row['dodyear']) ;
-				//$array['Year'] = $row['dodyear'];
-			}
-			//var_dump($arrc);
-		}
-		$array['Count'] = $arrc;
-		$array['Year'] = $arryr;
-		return $array;
-	}
 
-
-	function LocatorSummaryByYearCunit($pod,$cu){
-		$arrc= array();
-		$arryr= array();
-		$q='select  count(place_of_death)cnt,place_of_death as pod, 
-		year as dodyear from locator_data
-		where place_of_death='.'\''.$pod.'\''.' and cunit='.'\''.$cu.'\''.'
-	 	GROUP by year,place_of_death order by year desc';
-		 //echo $q;
-		$loc=$this->con->query($q);
-		if(is_array($loc) || is_object($loc)){
-			foreach($loc as $row){
-				 array_push($arrc, $row['cnt']) ;
-				 array_push($arryr, $row['dodyear']) ;
-				//$array['Year'] = $row['dodyear'];
-			}
-			//var_dump($arrc);
-		}
-		$array['Count'] = $arrc;
-		$array['Year'] = $arryr;
-		return $array;
-	}
-
-	public function locatorData(){
-		
-	}
-
-	public function smsClean(){
-		
-	}
-	public function smsErrors(){
-		
-	}
-	
 
 function VADataWHO($vid){
-		$vadata="SELECT * from vadata where ID='".$vid."' ";
-
+	$vid=pg_escape_string($vid);
+		//$vadata="SELECT * from vadata_all where ID='".$vid."' ";
+		$vadata="select distinct t1.id,t1.cause1 AS interva5,t1.comcat, t1.insilico,t2.*
+			FROM vacod t1 JOIN vadata_clean t2 ON t1.id = t2.instanceid where ID='".$vid."' ";
 		$dt =$this->con->query($vadata);
 		$data = $dt->fetchAll(PDO::FETCH_ASSOC);
 		
@@ -963,11 +1065,13 @@ function VADataWHO($vid){
 	function createMappingArray(){
 		$array = array("locator_filenum" =>"Enter the file number of the notification form",
 "consent_filenum" =>"Enter again the file number of the notification form to confirm",
+"interva5" =>"InterVA5",
+"insilico"=>"insilico",
 "id10002" =>"(id10002) [Is this a region of high HIV/AidS mortality?]",
 "id10003" =>"(id10003) [Is this a region of high malaria mortality?]",
 "id10004" =>"(id10004) [During which season did (s)he die?]",
 "id10007" =>"(id10007) [What is the name of VA respondent?]",
-"id10008" =>"(id10008) What is your/the respondent's relationship to the deceased?",
+"id10008" =>"(id10008) What is your/the respondents relationship to the deceased?",
 "id10009" =>"(id10009) Did you/the respondent live with the deceased in the period leading to her/his death?",
 "id10010" =>"(id10010) [Name of VA interviewer]",
 "id10012" =>"(id10012) Date of interview",
@@ -988,17 +1092,17 @@ function VADataWHO($vid){
 "ageinyears" =>"Age In  Years",
 "ageinyears2" =>"Age In  Years",
 "age_group" =>"[What age group corresponds to the deceased?] ",
-"age_neonate_days" =>"How many days old was the baby? [Enter neonate's age in days:]",
+"age_neonate_days" =>"How many days old was the baby? [Enter neonates age in days:]",
 "age_in_days_neonate"=>"How many days old was the baby?",
 "age_in_months" => "Age in Months",
 "instanceid" => "ID",
 "age_in_months_by_year" =>"Age in Months by year",
 "age_in_months_remain" =>"age in months Remaining",
-"age_child_unit" =>"How old was the child? [Enter child's age in:]",
-"age_child_days" =>"[Enter child's age in days:]",
-"age_child_months" =>"[Enter child's age in months:]",
-"age_child_years" =>"[Enter child's age in years:]",
-"age_adult" =>"[Enter adult's age in years:]",
+"age_child_unit" =>"How old was the child? [Enter childs age in:]",
+"age_child_days" =>"[Enter childs age in days:]",
+"age_child_months" =>"[Enter childs age in months:]",
+"age_child_years" =>"[Enter childs age in years:]",
+"age_adult" =>"[Enter adults age in years:]",
 "isneonatal" =>"isNeonatal",
 "ischild" =>"isChild",
 "isadult" =>"isAdult",
@@ -1051,8 +1155,8 @@ function VADataWHO($vid){
 "id10112" =>"(id10112) Did the baby have a breathing problem?",
 "id10113" =>"(id10113) Was the baby given assistance to breathe at birth?",
 "id10114" =>"(id10114) If the baby didn't show any sign of life, was it born dead?",
-"id10115" =>"(id10115) Were there any bruises or signs of injury on baby's body after the birth?",
-"id10116" =>"(id10116) Was the baby’s body soft, pulpy and discoloured and the skin peeling away?",
+"id10115" =>"(id10115) Were there any bruises or signs of injury on babys body after the birth?",
+"id10116" =>"(id10116) Was the babys body soft, pulpy and discoloured and the skin peeling away?",
 "id10077" =>"(id10077) Did (s)he suffer from any injury or accident that led to her/his death?",
 "id10079" =>"(id10079) Was it a road traffic accident?",
 "id10080" =>"(id10080) What was her/his role in the road traffic accident?",
@@ -1298,7 +1402,7 @@ function VADataWHO($vid){
 "id10274" =>"(id10274) How many days after birth did the baby stop suckling?",
 "id10275" =>"(id10275) Did the baby have convulsions starting within the first 24 hours of life?",
 "id10276" =>"(id10276) Did the baby have convulsions starting more than 24 hours after birth?",
-"id10277" =>"(id10277) Did the baby's body become stiff, with the back arched backwards?",
+"id10277" =>"(id10277) Did the babys body become stiff, with the back arched backwards?",
 "id10278" =>"(id10278) During the illness that led to death, did the baby have a bulging or raised fontanelle? ",
 "id10279" =>"(id10279) During the illness that led to death, did the baby have a sunken fontanelle? ",
 "id10281" =>"(id10281) During the illness that led to death, did the baby become unresponsive or unconscious?",
@@ -1388,7 +1492,7 @@ function VADataWHO($vid){
 "id10371" =>"(id10371) Did the baby/ child have a swelling or defect on the back at time of birth?",
 "id10372" =>"(id10372) Did the baby/ child have a very large head at time of birth?",
 "id10373" =>"(id10373) Did the baby/ child have a very small head at time of birth?",
-"id10394" =>"(id10394) How many births, including stillbirths, did the baby's mother have before this baby?",
+"id10394" =>"(id10394) How many births, including stillbirths, did the babys mother have before this baby?",
 "id10376" =>"(id10376) Was the baby moving in the last few days before the birth?",
 "id10377" =>"(id10377) Did the baby stop moving in the womb before labour started?",
 "id10379_unit" =>"(id10379_unit) How long before labour did you/the mother last feel the baby move?",
@@ -1404,15 +1508,15 @@ function VADataWHO($vid){
 "id10391" =>"(id10391) Did you/the mother receive any vaccinations since reaching adulthood including during this pregnancy?",
 "id10392" =>"(id10392) How many doses?",
 "id10393" =>"(id10393) Did you/the mother receive tetanus toxoid (TT) vaccine?",
-"id10395" =>"(id10395) During labour, did the baby's mother suffer from fever?",
-"id10396" =>"(id10396) During the last 3 months of pregnancy, labour or delivery, did you/the baby's mother suffer from high blood pressure?",
-"id10397" =>"(id10397) Did you/the baby's mother have diabetes mellitus?",
-"id10398" =>"(id10398) Did you/the baby's mother have foul smelling vaginal discharge during pregnancy or after delivery?",
-"id10399" =>"(id10399) During the last 3 months of pregnancy, labour or delivery, did you/the baby's mother suffer from convulsions?",
-"id10400" =>"(id10400) During the last 3 months of pregnancy did you/the baby's mother suffer from blurred vision?",
-"id10401" =>"(id10401) Did you/the baby's mother have severe anemia?",
-"id10402" =>"(id10402) Did you/the baby's mother have vaginal bleeding during the last 3 months of pregnancy but before labour started?",
-"id10403" =>"(id10403) Did the baby's bottom, feet, arm or hand come out of the vagina before its head?",
+"id10395" =>"(id10395) During labour, did the babys mother suffer from fever?",
+"id10396" =>"(id10396) During the last 3 months of pregnancy, labour or delivery, did you/the babys mother suffer from high blood pressure?",
+"id10397" =>"(id10397) Did you/the babys mother have diabetes mellitus?",
+"id10398" =>"(id10398) Did you/the babys mother have foul smelling vaginal discharge during pregnancy or after delivery?",
+"id10399" =>"(id10399) During the last 3 months of pregnancy, labour or delivery, did you/the babys mother suffer from convulsions?",
+"id10400" =>"(id10400) During the last 3 months of pregnancy did you/the babys mother suffer from blurred vision?",
+"id10401" =>"(id10401) Did you/the babys mother have severe anemia?",
+"id10402" =>"(id10402) Did you/the babys mother have vaginal bleeding during the last 3 months of pregnancy but before labour started?",
+"id10403" =>"(id10403) Did the babys bottom, feet, arm or hand come out of the vagina before its head?",
 "id10404" =>"(id10404) Was the umbilical cord wrapped more than once around the neck of the child at birth?",
 "id10405" =>"(id10405) Was the umbilical cord delivered first?",
 "id10406" =>"(id10406) Was the baby blue in colour at birth?",
@@ -1433,7 +1537,7 @@ function VADataWHO($vid){
 "id10426" =>"(id10426) Did (s)he have the operation within 1 month before death?",
 "id10427" =>"(id10427) Was (s)he discharged from hospital very ill?",
 "id10428" =>"(id10428) Did (s)he receive any immunizations?",
-"id10429" =>"(id10429) Do you have the child's vaccination card?",
+"id10429" =>"(id10429) Do you have the childs vaccination card?",
 "id10430" =>"(id10430) Can I see the vaccination card (note the vaccines the child received)?",
 "id10431" =>"(id10431) Select EPI vaccines done",
 "id10432" =>"(id10432) Was care sought outside the home while (s)he had this illness?",
@@ -1459,7 +1563,7 @@ function VADataWHO($vid){
 "id10452" =>"(id10452) Were there any problems during admission to the hospital or health facility?",
 "id10453" =>"(id10453) Were there any problems with the way (s)he was treated (medical treatment, procedures, interpersonal attitudes, respect, dignity) in the hospital or health facility?",
 "id10454" =>"(id10454) Were there any problems getting medications or diagnostic tests in the hospital or health facility?",
-"id10455" =>"(id10455) Does it take more than 2 hours to get to the nearest hospital or health facility from the deceased's household?",
+"id10455" =>"(id10455) Does it take more than 2 hours to get to the nearest hospital or health facility from the deceaseds household?",
 "id10456" =>"(id10456) In the final days before death, were there any doubts about whether medical care was needed?",
 "id10457" =>"(id10457) In the final days before death, was traditional medicine used?",
 "id10458" =>"(id10458) In the final days before death, did anyone use a telephone or cell phone to call for help?",
