@@ -12,6 +12,7 @@ Download and Install Xampp [https://vitux.com/how-to-install-xampp-on-your-ubunt
 
 for Linux
 Navigate to computer/opt/lamp/htdocs/ and paste the "VATOOL_Demo" folder there.
+N/B: Open home folder in the VATOOL_Demo directory, edit the sqlite_functions.php file to include your respective database credentials.
 
 
 Open the "files_to_run" folder and locate the following:
