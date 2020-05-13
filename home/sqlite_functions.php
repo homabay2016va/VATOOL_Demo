@@ -10,7 +10,7 @@ Class SQLITEDB{
 
 			#$this->con=new PDO("sqlite:va.db");
 			//$this->con=new PDO("sqlite:va_new.db");
-		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=zmdata','vaprogram','P@55w0rd');
+		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=vatooldb','yourdbuser','yourdbpass');
 			//$this->con = new PDO('sqlite:C:/Users/user/OneDrive/CRVS_DASH_CODE/va.db');
 			//echo "ss";		
 

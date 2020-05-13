@@ -17,7 +17,11 @@ Navigate to computer/opt/lamp/htdocs/ and paste the "VATOOL_Demo" folder there.
 Open the "files_to_run" folder and locate the following:
 
 ## quick setup 
-demova.sql - this is the postgres database backup, go to postgres and restore the file for quick setup.
+demova.sql backup file- this is the postgres database backup, go to postgres and restore the file for quick setup.
+
+python file: this is the file that executes all necessary files (bat files) and other scripts to ensure database is updated appropriately.
+
+Once the python code executes successfully, you can now go to your browser and enter IP address/DNS of your server. If within the server you can use localhost, then apache port then application name. i.e.
 
 After restoring the database, you can go straight to the Dashboard (Type http://dns:port/CRVS or http://localhost/CRVS (If your apache runs in port 80))
 
@@ -33,7 +37,7 @@ After restoring the database, you can go straight to the Dashboard (Type http://
 • python_code.py – This is python code that will pick the "merged_cod_va.csv" and run analytics/data checks on it. In future, this code should be incooporated into the OpenVA pipeline for easy use and installation. Then execute this file after executing the R file. This also pushes data to postgres database for use by the dashboard.
 
 
-Once the python code executes successfully, you can now go to your browser and enter IP address/DNS of your server. If within the server you can use localhost, then apache port then application name. i.e.
+
 
 Type http://dns:port/CRVS or http://localhost/CRVS (If your apache runs in port 80)
 
