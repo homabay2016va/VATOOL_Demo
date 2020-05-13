@@ -15,38 +15,21 @@ Navigate to computer/opt/lamp/htdocs/ and paste the "VATOOL_Demo" folder there.
 
 
 Open the "files_to_run" folder and locate the following:
-
-## quick setup 
+•	python script – This is an automated program that executes all the necessary Bat files from beginning to end to update the database. 
+•	R files:- Combines various VA data to one final file. (Incase you want to merge all previous collected data from other forms).
+•	Bat files:- to execute R files on demand from the python program.
 demova.sql backup file- this is the postgres database backup, go to postgres and restore the file for quick setup.
 
-python file: this is the file that executes all necessary files (bat files) and other scripts to ensure database is updated appropriately.
 
-Once the python code executes successfully, you can now go to your browser and enter IP address/DNS of your server. If within the server you can use localhost, then apache port then application name. i.e.
+## quick setup 
+After restoring the database, execute the "pipeline" python script.
 
-After restoring the database, you can go straight to the Dashboard (Type http://dns:port/CRVS or http://localhost/CRVS (If your apache runs in port 80))
+Once the python code executes successfully, you can now go to your browser and enter IP address/DNS of your server. If within the server you can use localhost, then apache port then application name. i.e. (Type http://dns:port/your_app_folder_name or http://localhost/your_app_folder_name (If your apache runs in port 80))
 
-## for manual setup
-• vadata.csv – This is the original va data (demo data for this purpose)
-
-• icd10.csv – A list of ICD10 causes and codes. (for information- not used by the python code but by the pipeline_cod.R code)
-
-• pipeline_cod.R - Customized code for running COD using both Insilico and InterVA and produces the "merged_cod_va.csv" file. Begin by opening this and make necessary adjustment to run with your data. End product should be the following file.
-
-• merged_cod_va.csv – This is the va data that is merged with respective COD and ICD10 codes. This is important file for the dashboard python code. 
-
-• python_code.py – This is python code that will pick the "merged_cod_va.csv" and run analytics/data checks on it. In future, this code should be incooporated into the OpenVA pipeline for easy use and installation. Then execute this file after executing the R file. This also pushes data to postgres database for use by the dashboard.
-
-
-
-
-Type http://dns:port/CRVS or http://localhost/CRVS (If your apache runs in port 80)
 
 Dashboard is ready for use.
 
-Further documentation is also in this folder "VATOOL_documentation.pdf"
-
-# Future updates
-Have a desktop app that is customizable and easier to install and use. Doing away with need to install webserver. Thank you!
+Further documentation is also in this folder "VATOOL_documentation.pdf" and the video tutorial file.
 
 Developed by:
 Odhiambo Collins Ochieng
