@@ -8,7 +8,7 @@ CREATE TABLE if not exists "users" (
 );
 
 insert into users values 
-('admin','qollinsochieng@gmail.com','254702344393','Administrator',
+('admin','newadmin@gmail.com','254711999999','Administrator',
 '$2y$10$tPuDKc4oUtHQOWI7iqbBFOCyLM.vI1qTSNHwP/Ka2Z97/NQ2s8IMG')
 
 //echo password_hash('admin123', PASSWORD_DEFAULT);
