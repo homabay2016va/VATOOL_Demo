@@ -140,6 +140,17 @@ tr,td {
 	$neonate = $vaforms['neonate'];
 	$totalforms = $vaforms['vacnt'];
 
+ $todayq = $df->countToday();
+  $today = $todayq['today'];
+
+ $thisweekq = $df->countThisWeek();
+  $thisweek = $thisweekq['thisweek'];
+
+  $thismonq = $df->countThisMonth();
+  $thismon = $thismonq['thismonth'];
+
+   $thisyearq = $df->countThisYear();
+  $thisyear = $thisyearq['thisyear'];
 	/* LOCATOR FORM DATA
 	$cntloc = $df->CountLocatorForm();
 	$cntloc = $cntloc['cntloc'];
@@ -250,13 +261,22 @@ tr,td {
 						</div>	
 				</div>	<!-- END OF ROW 2-->
 				
+				<div class="row" style="margin-top: 2vh;"> 
+							        <table class="table table-bordered" cellspacing="0" style="width: 200px;">
+							           <tr><th>Today</th><th><?php echo $today;?></th></tr>
+							            <tr> <th>This week</th><th><?php echo $thisweek;?></th></tr>
+							           <tr>  <th>This month</th><th><?php echo $thismon;?></th></tr>
+							            <tr> <th>This Year</th><th><?php echo $thisyear;?></th></tr>          
+							        </table>
+							      </div>
 
 					<div class="row">
 						<div class="col-sm" id="vagraph">	
 						<p>Add another section</p>
+
 							<div class="progress">
 							  <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-
+							  	
 							</div>
 						</div>
 					</div> <!-- END OF ROW 7 -->

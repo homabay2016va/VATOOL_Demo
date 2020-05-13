@@ -11,7 +11,7 @@ Class SQLITEDB{
 
 			#$this->con=new PDO("sqlite:va.db");
 			//$this->con=new PDO("sqlite:va_new.db");
-		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=demova','demova','demova');
+		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=vatool','postgres','qollins8592');
 			//$this->con = new PDO('sqlite:C:/Users/user/OneDrive/CRVS_DASH_CODE/va.db');
 			//echo "ss";
 		}catch(PDOException $e){
@@ -88,6 +88,51 @@ Class SQLITEDB{
 		return $dt;
 
 	}
+
+	public function countToday(){
+		$arr = array();
+		$yr = "select count(*)today from vadata where cast(submissiondate as date)=current_date";
+		$resyr = $this->con->query($yr);
+		foreach($resyr as $row){
+			$array['today'] = $row['today'];		
+		}
+		return $array;
+	}
+
+	public function countThisWeek(){
+		$arr = array();
+		$yr = "select count(*)thisweek from vadata where date_part('week'::text, submissiondate::date)=date_part('week'::text, current_date::date) and 
+year=date_part('year'::text, current_date::date)";
+		$resyr = $this->con->query($yr);
+		foreach($resyr as $row){
+			$array['thisweek'] = $row['thisweek'];
+		}
+		return $array;
+	}
+
+	public function countThisMonth(){
+		$arr = array();
+		$yr = "select count(*)thismonth from vadata where month=date_part('month'::text, current_date::date) and 
+year=date_part('year'::text, current_date::date)";
+		$resyr = $this->con->query($yr);
+		foreach($resyr as $row){
+			$array['thismonth'] = $row['thismonth'];
+		}
+		return $array;
+	}
+
+
+public function countThisYear(){
+		$arr = array();
+		$yr = "select count(*)thisyear from vadata where year=date_part('year'::text, current_date::date) ";
+		$resyr = $this->con->query($yr);
+		foreach($resyr as $row){
+			$array['thisyear'] = $row['thisyear'];
+		}
+		return $array;
+	}
+
+	
 public function AllColumns(){
 		
 		$cols=array();

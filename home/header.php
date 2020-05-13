@@ -17,7 +17,7 @@ include("session.php");
     <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>   
   <script type="text/javascript" src="js/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="js/plotly-1.5.0.min.js"></script>
+<script type="text/javascript" src="js/plotly-latest.min.js"></script>
 
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="vendor/jquery/jquery-ui.css" rel="stylesheet" type="text/css">

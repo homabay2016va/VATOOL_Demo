@@ -19,6 +19,11 @@ include("header.php");
 	    align-items: stretch;
 	}
 
+
+.midcontent{
+		width: 50vw;
+	}
+
 	ul.pagination li{
 	margin-left: ;
 	border: solid 1px #ddd;
@@ -28,10 +33,6 @@ include("header.php");
 	padding-right: 10px;
 	
 }
-.midcontent{
-		width: 50vw;
-	}
-
 ul.pagination {
 	width: 300px;
 }
@@ -43,6 +44,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 tr,td {
 	font-size: 12px;
 }
+
+div.dataTables_wrapper div.dataTables_filter {
+    margin-left: 20vw;
+}
+
 
 .summaryTable{
 	width: 300px;

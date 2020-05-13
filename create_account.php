@@ -77,7 +77,7 @@ include("header.php");
 							$cpwd = password_hash($_POST['cpwd'],PASSWORD_DEFAULT);
 							if(password_verify($_POST['pwd'], $cpwd)){
 								//echo "verr";
-								$vadata="insert into users(username,email,phonenumber,usergroup,Password) 
+								$vadata="insert into public.users(username,email,phonenumber,usergroup,Password) 
 								values('".$uname."','".$email."','".$phonenumber."','".$ugroup."',
 								'".$pwd."')";
 											

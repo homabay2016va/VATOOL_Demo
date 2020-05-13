@@ -5,8 +5,8 @@ Class loginFN{
 		
 		try{
 			
-		$this->con=new PDO('pgsql:host=127.0.0.1;dbname=demova','demova','demova');
-			
+		$this->con=new PDO('pgsql:host=127.0.0.1;dbname=vatool','postgres','qollins8592');
+	
 		}catch(PDOException $e){
 			print($e->getMessage());
 		}
