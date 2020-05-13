@@ -60,7 +60,7 @@
     <div class="right column" style="">
       <!-- dash items -->
       <div class="row"> 
-        <div class="" id="card"><h3>We are here</h3></div>
+        <div class="" id="card"><h3>Age group summary</h3></div>
       </div>
 
       <div class="row" style="margin-top: 2vh;"> 
