@@ -1,9 +1,9 @@
 <?php
 
 if(isset($_POST['login'])){
-	include("login_fn.php");
+	include("home/sqlite_functions.php");
 
-	$lg = new loginFN();
+	$lg = new SQLITEDB();
 						$uname = $_POST['uname'];
 						$pwd = $_POST['pwd'];
 						$ud = $lg->login($uname,$pwd);
