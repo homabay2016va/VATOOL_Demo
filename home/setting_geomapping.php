@@ -444,9 +444,7 @@ $("#btn_add_interviewers").button().on("click", function() {
             echo "</table>"; 
         }else{
           echo "no data!";
-        }
-
-        
+        }      
          ?> 
       </div>
 

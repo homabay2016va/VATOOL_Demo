@@ -11,8 +11,7 @@ Class SQLITEDB{
 			#$this->con=new PDO("sqlite:va.db");
 			//$this->con=new PDO("sqlite:va_new.db");
 		$this->con = new PDO('pgsql:host=127.0.0.1;dbname=vatooldb','yourdbuser','yourdbpass');
-			//$this->con = new PDO('sqlite:C:/Users/user/OneDrive/CRVS_DASH_CODE/va.db');
-			//echo "ss";		
+			//$this->con = new PDO('sqlite:C:/Users/user/OneDrive/CRVS_DASH_CODE/va.db');	
 
 		}catch(PDOException $e){
 			print($e->getMessage());

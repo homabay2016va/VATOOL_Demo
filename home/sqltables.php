@@ -175,7 +175,6 @@ tr,td {
             }else{
               echo "No data";
             }
-  
 
         }
          ?> 
