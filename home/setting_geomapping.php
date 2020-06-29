@@ -125,7 +125,7 @@ $("#btn_add_interviewers").button().on("click", function() {
   
   include("sqlite_functions.php");
   $df = new SQLITEDB();
-  $cl = $df->AllTables();
+  //$cl = $df->AllTables();
    //$dirty = $df->InterviwerList(1);
   $clean = $df->InterviwerList(3);
   $geo = $df->InterviwerList(4);
@@ -135,8 +135,8 @@ $("#btn_add_interviewers").button().on("click", function() {
   ///var_dump($prov);
   $dist = $df->GeoList(2);
   $fac = $df->GeoList(3);
-
-
+  
+  
 ?>
 
 <div class="container-fluid">
@@ -408,7 +408,9 @@ $("#btn_add_interviewers").button().on("click", function() {
           $tcol = $df ->AnytableCols($str);
           $rows = $df ->AnytableData($str);
           
-          
+          $rcnt = $rows->RowCount();
+          if($rcnt>0){
+
           $cntRows = sizeof($tcol);
           $cntCol = sizeof($tcol[0]);
           echo '<table class="table table-sm table-bordered " id="intsumTbl2" cellspacing="0" style="width:auto;">';
@@ -440,7 +442,9 @@ $("#btn_add_interviewers").button().on("click", function() {
             echo "</tr></tfoot>";
                       
             echo "</table>"; 
-  
+        }else{
+          echo "no data!";
+        }
 
         
          ?> 

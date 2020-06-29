@@ -43,9 +43,9 @@ v1[,] <- apply(v1[ , ], 2, function(x) as.character(x))
 #smartva[,] <- apply(smartva[ , ], 2, function(x) as.character(x))
 
 drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "zmdata",
-                 host = "10.2.168.18", port = 5432,
-                 user = "vaprogram", password = "P@55w0rd")
+con <- dbConnect(drv, dbname = "demodb",
+                 host = "127.0.0.1", port = 5432,
+                 user = "dbusername", password = "dbpassword")
 #va = dbSendQuery(con,"select * from vadata")
 #va<- dbReadTable(con, "vadata")
 

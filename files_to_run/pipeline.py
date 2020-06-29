@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 ##restore db file before starting/running this file
 import pandas as pd
 import numpy as np
@@ -13,13 +10,13 @@ import psycopg2 as pg
 import pandas.io.sql as psql
 
 
-
-connection = pg.connect(user = "vaprogram",
-                                  password = "P@55w0rd",
-                                  host = "10.2.168.18",
+#host = "10.2.168.18"
+connection = pg.connect(user = "yourdbusernaame",
+                                  password = "yourdbpassword",
+                                  host = "127.0.0.1",
                                   port = "5432",
-                                  database = "zmdata")
-engine = create_engine('postgresql://vaprogram:P@55w0rd@10.2.168.18:5432/zmdata')
+                                  database = "yourdatabase")
+engine = create_engine('postgresql://yourdbusernaame:yourdbpassword@127.0.0.1:5432/yourdatabase')
 
 
 def Initialize(init_status):
@@ -63,8 +60,6 @@ def InitializeDB(init_status):
             #closing database connection.
             if(connection):
                 cur.close()
-                #connection.close()
-                #print("PostgreSQL connection is closed")
                 
 InitializeDB('no')
 
@@ -81,62 +76,16 @@ subprocess.call("R_combined.bat")
 
 
 #read VA Data to temp and field data
-psql.execute("CALL public.insert_transition()",connection)
+psql.execute("CALL public.main_process()",connection)
 connection.commit()
 print("proceesed insert transition...")
 
-
-psql.execute("CALL public.remove_duplicates()",connection)
-connection.commit()
-print("removed duplicates...")
-
-
-vadata = psql.read_sql("SELECT * FROM vadata_transition", connection)
-#smartva = psql.read_sql("SELECT * FROM smartva_transition", connection)
-print("vadata selected...")
-
-
-
-
-#SAVE DATA TO CLEAN TABLE
-clean = psql.read_sql("SELECT * FROM vadata_transition where instanceid not in (SELECT instanceid FROM errors)"
-                      "and instanceid in (SELECT instanceid FROM vadata_field) and instanceid "
-                     " not in (SELECT instanceid FROM vadata_clean) ", connection)
-
-clean.to_sql("vadata_clean", con = engine, if_exists="append")
-
-
-
-psql.execute("delete FROM vadata_transition where instanceid not in (SELECT instanceid FROM errors)"
-                      "and instanceid in (SELECT instanceid FROM vadata_field) and instanceid "
-                     "  in (SELECT instanceid FROM vadata_clean) ",connection)
-connection.commit()
-print("saved vlean data...")
-
-
-
-#SAVE DATA TO CLEAN TABLE
-#clean2 = psql.read_sql("SELECT * FROM smartva_transition where instanceid not in (SELECT instanceid FROM smartvaerrors)"
- #                     "and instanceid in (SELECT instanceid FROM smartva_field) and instanceid "
-  #                   " not in (SELECT instanceid FROM smartva_clean) ", connection)
-
-#clean2.to_sql("smartva_clean", con = engine, if_exists="append")
-
-#psql.execute("delete FROM smartva_transition where instanceid not in (SELECT instanceid FROM smartvaerrors)"
- #                     "and instanceid in (SELECT instanceid FROM smartva_field) and instanceid "
-  #                   "  in (SELECT instanceid FROM smartva_clean) ",connection)
-#connection.commit()
 
 
 #save CSV DATA FOR COD
 vaclean = psql.read_sql("SELECT * FROM vadata_clean where instanceid not in (SELECT id FROM vacod)", connection)
 vaclean.to_csv("vaclean.csv",index=False)
 print("selected clean for cod...")
-
-
-#read VA Data to temp and field data
-psql.execute("CALL public.convert_dates()",connection)
-connection.commit()
 
 
 #RUN R COD
@@ -163,12 +112,14 @@ vacod.columns = list1
 
 vacod.rename(columns = {'cause':'insilico'}, inplace = True)
 
-connection = pg.connect(user = "vaprogram",
-                                  password = "P@55w0rd",
-                                  host = "10.2.168.18",
+
+connection = pg.connect(user = "yourdbusernaame",
+                                  password = "yourdbpassword",
+                                  host = "127.0.0.1",
                                   port = "5432",
-                                  database = "zmdata")
-engine = create_engine('postgresql://vaprogram:P@55w0rd@10.2.168.18:5432/zmdata')
+                                  database = "yourdatabase")
+engine = create_engine('postgresql://yourdbusernaame:yourdbpassword@127.0.0.1:5432/yourdatabase')
+
 vacod.to_sql("vacod", con = engine, if_exists="append")
 
 print("finished...")

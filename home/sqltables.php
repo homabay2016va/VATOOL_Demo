@@ -136,37 +136,45 @@ tr,td {
           $rows = $df ->AnytableData($str);
           
           
-          $cntRows = sizeof($tcol);
-          $cntCol = sizeof($tcol[0]);
-          echo '<table class="table table-sm table-bordered " id="intsumTbl2" cellspacing="0" style="width:auto;">';
+           $rcnt = $rows->RowCount();
+          if($rcnt>0){
+          
+            $cntRows = sizeof($tcol);
+            $cntCol = sizeof($tcol[0]);
 
-            $columns = array_keys($tcol[0]);
-            //var_dump($columns);
+         //   if($cntRows>0){
+              echo '<table class="table table-sm table-bordered " id="intsumTbl2" cellspacing="0" style="width:auto;">';
 
-            echo "<thead><tr>";
-            for($i=0;$i<$cntCol;$i++){
-              echo "<th>".$columns[$i]."</th>";
+                $columns = array_keys($tcol[0]);
+                //var_dump($columns);
+
+                echo "<thead><tr>";
+                for($i=0;$i<$cntCol;$i++){
+                  echo "<th>".$columns[$i]."</th>";
+                }
+                echo "</tr></thead>";
+                                            
+                echo "<tbody>";
+                foreach($rows as $row) {
+                  echo "<tr>";
+                  for($k=0;$k<$cntCol;$k++){
+                    echo "<td>".$row[$k]."</td>";
+                  }
+                 echo "</tr>";
+                }
+                echo "</tbody>";
+
+
+                echo "<tfoot><tr>";
+                for($i=0;$i<$cntCol;$i++){
+                  echo "<th>".$columns[$i]."</th>";
+                }
+                echo "</tr></tfoot>";
+                          
+                echo "</table>"; 
+            }else{
+              echo "No data";
             }
-            echo "</tr></thead>";
-                                        
-            echo "<tbody>";
-            foreach($rows as $row) {
-              echo "<tr>";
-              for($k=0;$k<$cntCol;$k++){
-                echo "<td>".$row[$k]."</td>";
-              }
-             echo "</tr>";
-            }
-            echo "</tbody>";
-
-
-            echo "<tfoot><tr>";
-            for($i=0;$i<$cntCol;$i++){
-              echo "<th>".$columns[$i]."</th>";
-            }
-            echo "</tr></tfoot>";
-                      
-            echo "</table>"; 
   
 
         }
