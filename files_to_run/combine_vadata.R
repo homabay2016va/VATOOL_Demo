@@ -48,7 +48,6 @@ con <- dbConnect(drv, dbname = "demodb",
                  user = "dbusername", password = "dbpassword")
 #va = dbSendQuery(con,"select * from vadata")
 #va<- dbReadTable(con, "vadata")
-
 #dbWriteTable(con,"icd10",icd10, append=TRUE)
 
 dbWriteTable(con,"vadata_field",v1, append=TRUE)

@@ -74,12 +74,10 @@ subprocess.call("zmdata.bat")
 #RUN R combineVA data 
 subprocess.call("R_combined.bat")
 
-
 #read VA Data to temp and field data
 psql.execute("CALL public.main_process()",connection)
 connection.commit()
 print("proceesed insert transition...")
-
 
 
 #save CSV DATA FOR COD
@@ -93,7 +91,6 @@ subprocess.call("R_who_cod.bat")
 #print("cod completed")
 
 connection.close()
-
 
 #SAVE COD TO DB
 #link = os.getcwd()+"\\smartvacod\\"+"1-individual-cause-of-death\\individual-cause-of-death.csv"
@@ -111,8 +108,6 @@ vacod.columns = list1
 
 
 vacod.rename(columns = {'cause':'insilico'}, inplace = True)
-
-
 connection = pg.connect(user = "yourdbusernaame",
                                   password = "yourdbpassword",
                                   host = "127.0.0.1",

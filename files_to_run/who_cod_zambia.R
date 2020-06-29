@@ -811,7 +811,7 @@ cod_int$CAUSE1 = trimws(cod_int$CAUSE1)
 vadata_ins =vadata_int
 colnames(vadata_ins) = tolower(colnames(vadata_ins))
 fit_ins = codeVA(vadata_ins,data.type = "WHO2016", model = "InSilicoVA",directory=".",
-                 Nsim = 10000 ,Malaria = "h", HIV = "h")
+                 Nsim = 1000 ,Malaria = "h", HIV = "h")
 
 #getIndivProb()
 ins_cod = getTopCOD(fit_ins)
