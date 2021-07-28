@@ -28,7 +28,7 @@ def Initialize(init_status):
             connection.commit()
             print("created table users sucessfully")
             
-            cur.execute("insert into public.users values('admin','qollinsochieng@gmail.com','254702344393','Administrator','$2y$10$tPuDKc4oUtHQOWI7iqbBFOCyLM.vI1qTSNHwP/Ka2Z97/NQ2s8IMG',1)")
+            cur.execute("insert into public.users values('admin','me@gmail.com','000000','Administrator','$2y$10$tPuDKc4oUtHQOWI7iqbBFOCyLM.vI1qTSNHwP/Ka2Z97/NQ2s8IMG',1)")
             print("inserted user sucessfully")
             connection.commit()
             
